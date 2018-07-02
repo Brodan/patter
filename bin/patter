@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+
+"""
+Something goes here.
+"""
+
+import sys
+import argparse
+
+import patter
+
+
+parser = argparse.ArgumentParser(description="Send your stdout directly to Mattermost.")
+parser.add_argument(
+    "-p",
+    help="Do not format message as code",
+    action='store_true'
+)
+parser.add_argument(
+    "--user", "-u",
+    default="the user ",
+    help="Specify an alternative configuration file."
+)
+parser.add_argument(
+    "--channel", "-c",
+    help="skip updating start and end dates",
+    required='--user' not in sys.argv
+)
+
+try:
+    args = parser.parse_args()
+    stdin = "".join([i for i in sys.stdin])
+except ValueError:
+    parser.print_help()
+    sys.exit(1)
+
+patter = patter.Patter(args.config, stdin)
+patter.send_message()
+sys.exit(0)
