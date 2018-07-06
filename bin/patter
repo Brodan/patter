@@ -7,33 +7,31 @@ Something goes here.
 import sys
 import argparse
 
-import patter
+from patter.exceptions import MissingPipeException
+from patter.patter import Patter
 
 
-parser = argparse.ArgumentParser(description="Send your stdout directly to Mattermost.")
+parser = argparse.ArgumentParser(
+    description="Send stdout directly to a Mattermost channel or user."
+)
 parser.add_argument(
     "-p",
-    help="Do not format message as code",
-    action='store_true'
+    help="Don't format message as code",
+    action='store_false',
 )
-parser.add_argument(
-    "--user", "-u",
-    default="the user ",
-    help="Specify an alternative configuration file."
-)
-parser.add_argument(
-    "--channel", "-c",
-    help="skip updating start and end dates",
-    required='--user' not in sys.argv
-)
+group = parser.add_mutually_exclusive_group(required=True)
+group.add_argument("--channel", "-c", help="recipient channel")
+group.add_argument("--user", "-u", help="receipient user")
 
 try:
+    if sys.stdin.isatty():
+        raise MissingPipeException('patter must receive input from stdin')
     args = parser.parse_args()
-    stdin = "".join([i for i in sys.stdin])
 except ValueError:
     parser.print_help()
     sys.exit(1)
 
-patter = patter.Patter(args.config, stdin)
+patter = Patter(sys.stdin.read(), args.p, args.user, args.channel)
 patter.send_message()
+
 sys.exit(0)
