@@ -17,7 +17,13 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     "-p",
     help="Don't format message as code",
-    action='store_false',
+    action="store_false",
+)
+parser.add_argument(
+    "--verbose",
+    "-v",
+    help="verbose output",
+    action="store_true",
 )
 group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument("--channel", "-c", help="recipient channel")
@@ -27,11 +33,11 @@ group.add_argument("--user", "-u", help="recipient user")  # TODO? allow list of
 try:
     args = parser.parse_args()
     if sys.stdin.isatty():
-        raise MissingPipeException('patter must receive input from stdin')
+        raise MissingPipeException("patter must receive input from stdin")
 except ValueError:
     parser.print_help()
     sys.exit(1)
 
 # TODO: handle text that is not UTF-8
-patter = Patter(sys.stdin.read(), args.p, args.user, args.channel)
+patter = Patter(sys.stdin.read(), args.p, args.user, args.channel, args.verbose)
 patter.send_message()

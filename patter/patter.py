@@ -1,4 +1,6 @@
+
 import os
+# import logging
 
 from mattermostdriver import Driver
 from requests.exceptions import ConnectionError, HTTPError
@@ -8,11 +10,12 @@ from patter.exceptions import MissingTeamName, MissingUser, MissingChannel
 
 class Patter(object):
 
-    def __init__(self, message, format_as_code, user, channel):
+    def __init__(self, message, format_as_code, user, channel, verbose):
         self.message = message
         self.format_as_code = format_as_code
         self.user = user
         self.channel = channel
+        self.verbose = verbose
 
         self.team_name = os.getenv("MATTERMOST_TEAM_NAME", None)
         if not self.team_name:
