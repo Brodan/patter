@@ -21,17 +21,17 @@ parser.add_argument(
 )
 group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument("--channel", "-c", help="recipient channel")
-group.add_argument("--user", "-u", help="receipient user")
+group.add_argument("--user", "-u", help="recipient user")  # TODO? allow list of users
+# TODO: verbose flag
 
 try:
+    args = parser.parse_args()
     if sys.stdin.isatty():
         raise MissingPipeException('patter must receive input from stdin')
-    args = parser.parse_args()
 except ValueError:
     parser.print_help()
     sys.exit(1)
 
+# TODO: handle text that is not UTF-8
 patter = Patter(sys.stdin.read(), args.p, args.user, args.channel)
 patter.send_message()
-
-sys.exit(0)

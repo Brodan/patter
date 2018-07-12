@@ -31,50 +31,66 @@ class Patter(object):
             "debug": False,
         })
 
+        # TODO: add option of reading from a .patter file instead of using env vars.
+
         try:
             self.mm_client.login()
         except ConnectionError:
+            # TODO: convert to logger at ERROR level
             print("Unable to connect to the configured Mattermost server.")
             raise
 
     def send_message(self):
         if self.format_as_code:
             self.message = "```\n{}```".format(self.message)
+        self.message += "\n⁽ᵐᵉˢˢᵃᵍᵉ ᵇʳᵒᵘᵍʰᵗ ᵗᵒ ʸᵒᵘ ᵇʸ ᵖᵃᵗᵗᵉʳ⁾"
 
         if self.channel:
-            try:
-                channel_id = self._get_channel_id_by_name(self.channel)
-            except HTTPError:
-                raise MissingChannel("The channel \'{}\' does not exist.".format(
-                    self.channel,
-                ))
-            self.mm_client.posts.create_post(options={
-                "channel_id": channel_id,
-                "message": self.message,
-            })
+            self._send_message_to_channel()
 
         if self.user:
-            try:
-                recipient_user_id = self._get_user_id_by_name(self.user)
-            except HTTPError:
-                raise MissingUser("The user \'{}\' does not exist.".format(
-                    self.user,
-                ))
-            my_id = self.mm_client.users.get_user('me')['id']
+            self._send_message_to_user()
 
-            user_channel_id = self.mm_client.channels.create_direct_message_channel(
-                [recipient_user_id, my_id]
-            )['id']
-
-            self.mm_client.posts.create_post(options={
-                "channel_id": user_channel_id,
-                "message": self.message,
-            })
-
-        print("Mattermost message sent!")
+        # TODO: log on successful send if verbose flag is on
         return
 
+    def _send_message_to_channel(self):
+        try:
+            channel_id = self._get_channel_id_by_name(self.channel)
+        except HTTPError:
+            raise MissingChannel("The channel \'{}\' does not exist.".format(
+                self.channel,
+            ))
+        self.mm_client.posts.create_post(options={
+            "channel_id": channel_id,
+            "message": self.message,
+        })
+
+    def _send_message_to_user(self):
+        try:
+            recipient_user_id = self._get_user_id_by_name(self.user)
+        except HTTPError:
+            raise MissingUser("The user \'{}\' does not exist.".format(
+                self.user,
+            ))
+        my_id = self.mm_client.users.get_user('me')['id']
+
+        # The Mattermost API treats direct messages the same as regular channels,
+        # so we need to first get a channel ID to send the direct message.
+        user_channel_id = self.mm_client.channels.create_direct_message_channel(
+            [recipient_user_id, my_id]
+        )['id']
+
+        self.mm_client.posts.create_post(options={
+            "channel_id": user_channel_id,
+            "message": self.message,
+        })
+
     def _get_channel_id_by_name(self, channel_name):
+        """
+        The Mattermost API expects a channel ID, not a channel name.
+        Use this function to get an ID from a channel name.
+        """
         channel = self.mm_client.channels.get_channel_by_name_and_team_name(
             team_name=self.team_name,
             channel_name=channel_name,
@@ -82,6 +98,10 @@ class Patter(object):
         return channel["id"]
 
     def _get_user_id_by_name(self, user_name):
+        """
+        The Mattermost API expects a user ID, not a username.
+        Use this function to get an ID from a username.
+        """
         user = self.mm_client.users.get_user_by_username(
             username=user_name,
         )
