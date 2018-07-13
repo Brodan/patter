@@ -5,7 +5,7 @@ import os
 from mattermostdriver import Driver
 from requests.exceptions import ConnectionError, HTTPError
 
-from patter.exceptions import MissingTeamName, MissingUser, MissingChannel
+from patter.exceptions import MissingUser, MissingChannel
 
 
 class Patter(object):
@@ -17,11 +17,9 @@ class Patter(object):
         self.channel = channel
         self.verbose = verbose
 
-        self.team_name = os.getenv("MATTERMOST_TEAM_NAME", None)
-        if not self.team_name:
-            raise MissingTeamName(
-                "The MATTERMOST_TEAM_NAME environment variable must be set.")
+        self._check_env_vars()
 
+        self.team_name = os.getenv("MATTERMOST_TEAM_NAME")
         self.mm_client = Driver({
             "url": os.getenv("MATTERMOST_URL"),
             "login_id": os.getenv("MATTERMOST_USERNAME"),
@@ -34,12 +32,9 @@ class Patter(object):
             "debug": False,
         })
 
-        # TODO: add option of reading from a .patter file instead of using env vars.
-
         try:
             self.mm_client.login()
         except ConnectionError:
-            # TODO: convert to logger at ERROR level
             print("Unable to connect to the configured Mattermost server.")
             raise
 
@@ -54,7 +49,6 @@ class Patter(object):
         if self.user:
             self._send_message_to_user()
 
-        # TODO: log on successful send if verbose flag is on
         return
 
     def _send_message_to_channel(self):
@@ -109,3 +103,10 @@ class Patter(object):
             username=user_name,
         )
         return user["id"]
+
+    def _check_env_vars(self):
+        """Check that all of the required environment variables are set. If not,
+        print the ones that are missing.
+        TODO: Finish implementation
+        """
+        pass

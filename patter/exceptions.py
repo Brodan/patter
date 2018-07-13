@@ -14,6 +14,6 @@ class MissingUser(Exception):
     pass
 
 
-class MissingTeamName(Exception):
-    """Raise when the user has not configured a Mattermost team name."""
+class MissingEnvVars(Exception):
+    """Raise when not all the necessary environment variables are set."""
     pass
