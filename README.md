@@ -30,11 +30,11 @@ $ echo "testing" | patter -c town-square
 ```
 
 ## Todo
-- [] remove prints and add logging
-- [] add unit tests via pytest
-- [] handle verbose flag for logging
-- [] allow text that is not UTF-8 to be sent
-- [] add option of reading from a .patter file instead of using env vars.
+- [ ] remove prints and add logging
+- [ ] add unit tests via pytest
+- [ ] handle verbose flag for logging
+- [ ] allow text that is not UTF-8 to be sent
+- [ ] add option of reading from a .patter file instead of using env vars.
 
 ## Contribute
 
