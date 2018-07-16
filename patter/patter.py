@@ -1,11 +1,19 @@
-
 import os
 # import logging
 
 from mattermostdriver import Driver
 from requests.exceptions import ConnectionError, HTTPError
 
-from patter.exceptions import MissingUser, MissingChannel
+from patter.exceptions import MissingUser, MissingChannel, MissingEnvVars
+
+
+config_vars = {
+    "MATTERMOST_TEAM_NAME": os.getenv("MATTERMOST_TEAM_NAME", None),
+    "MATTERMOST_URL": os.getenv("MATTERMOST_URL", None),
+    "MATTERMOST_USERNAME": os.getenv("MATTERMOST_USERNAME", None),
+    "MATTERMOST_PASSWORD": os.getenv("MATTERMOST_PASSWORD", None),
+    "MATTERMOST_PORT": os.getenv("MATTERMOST_PORT", None),
+}
 
 
 class Patter(object):
@@ -19,18 +27,18 @@ class Patter(object):
 
         self._check_env_vars()
 
-        self.team_name = os.getenv("MATTERMOST_TEAM_NAME")
         self.mm_client = Driver({
-            "url": os.getenv("MATTERMOST_URL"),
-            "login_id": os.getenv("MATTERMOST_USERNAME"),
-            "password": os.getenv("MATTERMOST_PASSWORD"),
+            "url": config_vars["MATTERMOST_URL"],
+            "login_id": config_vars["MATTERMOST_USERNAME"],
+            "password": config_vars["MATTERMOST_PASSWORD"],
             "scheme": "https",
-            "port": int(os.getenv("MATTERMOST_PORT", 8065)),
+            "port": int(config_vars["MATTERMOST_PORT"]),
             "basepath": "/api/v4",
             "verify": True,
             "timeout": 30,
             "debug": False,
         })
+        self.team_name = config_vars["MATTERMOST_TEAM_NAME"]
 
         try:
             self.mm_client.login()
@@ -107,6 +115,12 @@ class Patter(object):
     def _check_env_vars(self):
         """Check that all of the required environment variables are set. If not,
         print the ones that are missing.
-        TODO: Finish implementation
         """
-        pass
+        missing_vars = list(k for k, v in config_vars.items() if v is None)
+        if len(missing_vars) > 0:
+            error_string = "\n\t".join(missing_vars)
+            raise MissingEnvVars(
+                "The following environment variables are required but not set:\n\t{}".format(
+                    error_string
+                )
+            )

@@ -20,7 +20,7 @@ setup(
     keywords="patter mattermost",
     url="https://github.com/brodan/patter",
     install_requires=[
-        "mattermostdriver==5.0.0",
+        "mattermostdriver>=5.0.0",
     ],
     packages=find_packages(),
     include_package_data=True,
@@ -32,7 +32,6 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.4",
         "Topic :: Communications :: Chat",
         "Topic :: Utilities",
     ],
