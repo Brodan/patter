@@ -2,6 +2,8 @@
 
 > Pipe stdout directly to [Mattermost](https://mattermost.com/).
 
+![patter demo](https://github.com/Brodan/patter/blob/master/demo.gif)
+
 ## Install
 
 ```
@@ -34,6 +36,7 @@ $ echo "testing" | patter -c town-square
 - [ ] add unit tests via pytest
 - [ ] allow text that is not UTF-8 to be sent
 - [ ] add option of reading from a .patter file instead of using env vars.
+- [ ] allow file attachments via -f flag
 
 ## Contribute
 
