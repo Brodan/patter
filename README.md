@@ -8,7 +8,7 @@
 $ pip install patter
 ```
 
-Then set the following environtment variables based on your Mattermost server's config:
+Then set the following environment variables based on your Mattermost server's config:
 ```
 MATTERMOST_TEAM_NAME
 MATTERMOST_URL
@@ -30,9 +30,8 @@ $ echo "testing" | patter -c town-square
 ```
 
 ## Todo
-- [ ] remove prints and add logging
+- [ ] remove prints and add logging with verbose flag
 - [ ] add unit tests via pytest
-- [ ] handle verbose flag for logging
 - [ ] allow text that is not UTF-8 to be sent
 - [ ] add option of reading from a .patter file instead of using env vars.
 
