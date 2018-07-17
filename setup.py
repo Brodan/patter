@@ -1,12 +1,10 @@
-import os
+from os import path
 from setuptools import setup, find_packages
 
 
-here = os.path.abspath(os.path.dirname(__file__))
-try:
-    README = open(os.path.join(here, 'README.md'), encoding='utf8').read()
-except IOError:
-    README = ''
+this_directory = path.abspath(path.dirname(__file__))
+with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
+    README = f.read()
 
 setup(
     name="patter",
