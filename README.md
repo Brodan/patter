@@ -42,3 +42,5 @@ PRs accepted.
 ## License
 
 MIT © Christopher Hranj
+
+Notice: This project was developed in part during my 10% time at [Truveris, Inc](https://www.truveris.com/).
