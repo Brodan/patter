@@ -18,12 +18,14 @@ config_vars = {
 
 class Patter(object):
 
-    def __init__(self, message, format_as_code, user, channel, verbose):
+    def __init__(self, message, format_as_code, user, channel, verbose,
+                 syntax):
         self.message = message
         self.format_as_code = format_as_code
         self.user = user
         self.channel = channel
         self.verbose = verbose
+        self.syntax = syntax
 
         self._check_env_vars()
 
@@ -48,7 +50,7 @@ class Patter(object):
 
     def send_message(self):
         if self.format_as_code:
-            self.message = "```\n{}```".format(self.message)
+            self.message = "```{}\n{}```".format(self.syntax, self.message)
         self.message += "\n⁽ᵐᵉˢˢᵃᵍᵉ ᵇʳᵒᵘᵍʰᵗ ᵗᵒ ʸᵒᵘ ᵇʸ ᵖᵃᵗᵗᵉʳ⁾"
 
         if self.channel:

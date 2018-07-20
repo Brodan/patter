@@ -1,9 +1,5 @@
 #!/usr/bin/env python
-
-"""
-Patter command line parser/script.
-"""
-
+"""Patter command line parser/script."""
 import sys
 import argparse
 
@@ -18,6 +14,12 @@ parser.add_argument(
     "-p",
     help="Don't format message as code",
     action="store_false",
+)
+parser.add_argument(
+    "-s",
+    "--syntax",
+    help="Syntax highlighting (default none)",
+    default="",
 )
 parser.add_argument(
     "--verbose",
@@ -37,5 +39,12 @@ except ValueError:
     parser.print_help()
     sys.exit(1)
 
-patter = Patter(sys.stdin.read(), args.p, args.user, args.channel, args.verbose)
+patter = Patter(
+    sys.stdin.read(),
+    args.p,
+    args.user,
+    args.channel,
+    args.verbose,
+    args.syntax,
+)
 patter.send_message()
