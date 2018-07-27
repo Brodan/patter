@@ -23,12 +23,12 @@ MATTERMOST_PORT
 
 > Send a message to a user.
 ```
-$ echo "testing" | patter -u some_user
+echo "testing" | patter -u some_user
 ```
 
 > Send a message to a channel.
 ```
-$ echo "testing" | patter -c town-square
+echo "testing" | patter -c town-square
 ```
 
 > Send a file.
