@@ -93,8 +93,10 @@ class Patter(object):
         :returns: Formatted message.
 
         """
-        formatted_message = message
+        if not message:
+            return ""
 
+        formatted_message = message
         if format_as_code:
             formatted_message = "```\n{}```".format(message)
         formatted_message += "\n⁽ᵐᵉˢˢᵃᵍᵉ ᵇʳᵒᵘᵍʰᵗ ᵗᵒ ʸᵒᵘ ᵇʸ ᵖᵃᵗᵗᵉʳ⁾"

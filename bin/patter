@@ -32,14 +32,19 @@ group.add_argument("--user", "-u", help="recipient user")
 
 try:
     args = parser.parse_args()
-    if sys.stdin.isatty():
-        raise MissingPipeException("patter must receive input from stdin")
 except ValueError:
     parser.print_help()
     sys.exit(1)
 
+message = None
+if not sys.stdin.isatty():
+    message = sys.stdin.read()
+else:
+    if not args.file:
+        raise MissingPipeException("patter must receive input from stdin")
+
 patter = Patter(
-    sys.stdin.read(),
+    message,
     args.file,
     args.p,
     args.user,
