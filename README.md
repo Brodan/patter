@@ -31,12 +31,16 @@ $ echo "testing" | patter -u some_user
 $ echo "testing" | patter -c town-square
 ```
 
+> Send a file.
+```
+patter -c town-square -f some_file.txt
+```
+
 ## Todo
-- [ ] remove prints and add logging with verbose flag
 - [ ] add unit tests via pytest
-- [ ] allow text that is not UTF-8 to be sent
+- [ ] allow message/files that are not UTF-8 to be sent
 - [ ] add option of reading from a .patter file instead of using env vars.
-- [ ] allow file attachments via -f flag
+- [ ] remove prints and add logging via verbose flag
 
 ## Contribute
 
