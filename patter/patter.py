@@ -9,7 +9,6 @@ from patter.exceptions import (
     MissingChannel,
     MissingEnvVars,
     MissingUser,
-
 )
 
 
@@ -25,13 +24,12 @@ config_vars = {
 class Patter(object):
 
     def __init__(self, message, filename, format_as_code, user, channel, verbose):
-        self.message = self._format_message(message, format_as_code)
+        self.message = message
+        self.format_as_code = format_as_code
         self.filename = filename
         self.user = user
         self.channel = channel
         self.verbose = verbose
-
-        self._check_env_vars()
 
         self.mm_client = Driver({
             "url": config_vars["MATTERMOST_URL"],
@@ -52,19 +50,36 @@ class Patter(object):
             print("Unable to connect to the configured Mattermost server.")
             raise
 
-    def send_message(self):
-        """Send the message."""
-        channel_id = self._get_message_channel_id()
+    def check_env_vars(self):
+        """Check that all of the required environment variables are set.
 
-        attached_file_id = None
-        if self.filename:
-            attached_file_id = self._attach_file(self.filename, channel_id)
+        If not, raise exception noting the ones that are missing.
+
+        :raises: MissingEnvVars.
+
+        """
+        missing_vars = list(k for k, v in config_vars.items() if v is None)
+
+        if len(missing_vars) > 0:
+            error_string = "\n\t".join(missing_vars)
+            raise MissingEnvVars(
+                "The following environment variables are required but not set:\n\t{}".format(
+                    error_string
+                )
+            )
+
+    def send_message(self):
+        """Send the outgoing message. If there is a file to send, attach it."""
+        channel_id = self._get_message_channel_id()
+        message = self._format_message(self.message, self.format_as_code)
 
         options = {
             "channel_id": channel_id,
-            "message": self.message,
+            "message": message,
         }
-        if attached_file_id:
+
+        if self.filename:
+            attached_file_id = self._attach_file(self.filename, channel_id)
             options["file_ids"] = [attached_file_id]
 
         self.mm_client.posts.create_post(options)
@@ -72,22 +87,27 @@ class Patter(object):
     def _format_message(self, message, format_as_code):
         """Adds formatting to the given message.
 
-        :param message: Message for format
+        :param message: String to be formatted.
         :param format_as_code: Boolen if message should be formatted as code.
 
         :returns: Formatted message.
 
         """
         formatted_message = message
+
         if format_as_code:
             formatted_message = "```\n{}```".format(message)
         formatted_message += "\n⁽ᵐᵉˢˢᵃᵍᵉ ᵇʳᵒᵘᵍʰᵗ ᵗᵒ ʸᵒᵘ ᵇʸ ᵖᵃᵗᵗᵉʳ⁾"
+
         return formatted_message
 
     def _get_message_channel_id(self):
         """Get the channel to send the message to.
+        Raise if the channel can't be found.
 
         :returns: Channel id string.
+
+        :raises: MissingChannel.
 
         """
 
@@ -118,8 +138,10 @@ class Patter(object):
 
     def _get_channel_id_for_user(self, user_name):
         """Get the channel id for a direct message with the target user.
+        Raise if the user can not be found.
 
         :returns: Channel id string.
+        :raises: MissingUser.
 
         """
         try:
@@ -128,6 +150,7 @@ class Patter(object):
             raise MissingUser("The user \'{}\' does not exist.".format(
                 user_name,
             ))
+
         my_id = self.mm_client.users.get_user("me")["id"]
 
         # The Mattermost API treats direct messages the same as regular
@@ -140,7 +163,6 @@ class Patter(object):
 
     def _get_user_id_by_name(self, user_name):
         """The Mattermost API expects a user ID, not a username.
-
         Use this function to get an ID from a username.
 
         :param user_name: Name of user to get user id for.
@@ -153,22 +175,6 @@ class Patter(object):
         )
         return user["id"]
 
-    def _check_env_vars(self):
-        """Check that all of the required environment variables are set.
-
-        If not, raise exception noting the ones that are missing.
-
-        :raises: MissingEnvVars.
-        """
-        missing_vars = list(k for k, v in config_vars.items() if v is None)
-        if len(missing_vars) > 0:
-            error_string = "\n\t".join(missing_vars)
-            raise MissingEnvVars(
-                "The following environment variables are required but not set:\n\t{}".format(
-                    error_string
-                )
-            )
-
     def _attach_file(self, filename, channel_id):
         """Attach the given filename into the given channel.
 
@@ -178,12 +184,11 @@ class Patter(object):
         :returns; Id string of file attachment.
 
         """
-        response = self.mm_client.files.upload_file(
-            channel_id=channel_id,
-            files={"files": (filename, open(filename))}
-        )
         try:
-            file_id = response["file_infos"][0]["id"]
+            file_upload = self.mm_client.files.upload_file(
+                channel_id=channel_id,
+                files={"files": (filename, open(filename))}
+            )
+            return file_upload["file_infos"][0]["id"]
         except (KeyError, IndexError):
-            raise FileUploadException("Unable to upload file '{}'".format(filename))
-        return file_id
+            raise FileUploadException("Unable to upload file '{}'.".format(filename))

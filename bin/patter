@@ -46,4 +46,5 @@ patter = Patter(
     args.channel,
     args.verbose,
 )
+patter.check_env_vars()
 patter.send_message()

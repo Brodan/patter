@@ -1,4 +1,9 @@
 
+class FileUploadException(Exception):
+    """Raise when a file upload fails."""
+    pass
+
+
 class MissingPipeException(Exception):
     """Raise when patter is called without receiving input with the pipe operator."""
     pass
@@ -16,9 +21,4 @@ class MissingUser(Exception):
 
 class MissingEnvVars(Exception):
     """Raise when not all the necessary environment variables are set."""
-    pass
-
-
-class FileUploadException(Exception):
-    """Raise when file upload fails."""
     pass
