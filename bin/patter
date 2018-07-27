@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
-"""
-Patter command line parser/script.
-"""
+"""Patter command line parser/script."""
 
 import sys
 import argparse
@@ -18,6 +16,12 @@ parser.add_argument(
     "-p",
     help="Don't format message as code",
     action="store_false",
+)
+parser.add_argument(
+    "-s",
+    "--syntax",
+    help="Syntax highlighting (default none)",
+    default="",
 )
 parser.add_argument(
     "--verbose",
@@ -50,6 +54,7 @@ patter = Patter(
     args.user,
     args.channel,
     args.verbose,
+    args.syntax,
 )
 patter.check_env_vars()
 patter.send_message()

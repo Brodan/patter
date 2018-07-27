@@ -23,13 +23,15 @@ config_vars = {
 
 class Patter(object):
 
-    def __init__(self, message, filename, format_as_code, user, channel, verbose):
+    def __init__(self, message, format_as_code, user, channel, verbose,
+                 syntax):
         self.message = message
         self.format_as_code = format_as_code
         self.filename = filename
         self.user = user
         self.channel = channel
         self.verbose = verbose
+        self.syntax = syntax
 
         self.mm_client = Driver({
             "url": config_vars["MATTERMOST_URL"],
@@ -71,7 +73,7 @@ class Patter(object):
     def send_message(self):
         """Send the outgoing message. If there is a file to send, attach it."""
         channel_id = self._get_message_channel_id()
-        message = self._format_message(self.message, self.format_as_code)
+        message = self._format_message(self.message, self.format_as_code, self.syntax)
 
         options = {
             "channel_id": channel_id,
@@ -84,7 +86,7 @@ class Patter(object):
 
         self.mm_client.posts.create_post(options)
 
-    def _format_message(self, message, format_as_code):
+    def _format_message(self, message, format_as_code, syntax):
         """Adds formatting to the given message.
 
         :param message: String to be formatted.
@@ -98,7 +100,7 @@ class Patter(object):
 
         formatted_message = message
         if format_as_code:
-            formatted_message = "```\n{}```".format(message)
+            formatted_message = "```{}\n{}```".format(syntax, message)
         formatted_message += "\n⁽ᵐᵉˢˢᵃᵍᵉ ᵇʳᵒᵘᵍʰᵗ ᵗᵒ ʸᵒᵘ ᵇʸ ᵖᵃᵗᵗᵉʳ⁾"
 
         return formatted_message
