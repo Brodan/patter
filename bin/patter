@@ -53,8 +53,8 @@ patter = Patter(
     args.p,
     args.user,
     args.channel,
-    args.verbose,
     args.syntax,
+    args.verbose,
 )
 patter.check_env_vars()
 patter.send_message()

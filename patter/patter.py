@@ -23,8 +23,8 @@ config_vars = {
 
 class Patter(object):
 
-    def __init__(self, message, format_as_code, user, channel, verbose,
-                 syntax):
+    def __init__(self, message, filename, format_as_code, user, channel, syntax,
+                 verbose):
         self.message = message
         self.format_as_code = format_as_code
         self.filename = filename
