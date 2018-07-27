@@ -8,7 +8,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name="patter",
-    version="0.1.0",
+    version="0.2.0",
     author="Christopher Hranj",
     author_email="christopher.hranj@gmail.com",
     description="Pipe stdout directly to Mattermost channels or users.",

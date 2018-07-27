@@ -24,15 +24,15 @@ parser.add_argument(
     default="",
 )
 parser.add_argument(
-    "--verbose",
     "-v",
+    "--verbose",
     help="verbose output",
     action="store_true",
 )
-parser.add_argument("--file", "-f", help="file to attach")
+parser.add_argument("-f", "--file", help="file to attach")
 group = parser.add_mutually_exclusive_group(required=True)
-group.add_argument("--channel", "-c", help="recipient channel")
-group.add_argument("--user", "-u", help="recipient user")
+group.add_argument("-c", "--channel", help="recipient channel")
+group.add_argument("-u", "--user", help="recipient user")
 
 try:
     args = parser.parse_args()
